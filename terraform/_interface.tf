@@ -6,24 +6,8 @@ variable "consul_sg_id" {
 	type = "string"
 }
 
-variable "tls_kms_arn" {
-	type = "string"
-}
-
-variable "tls_key_bucket_arn" {
-	type = "string"
-}
-
 variable "subnets" {
 	type = "list"
-}
-
-variable "backup_bucket_name" {
-	type = "string"
-}
-
-variable "backup_bucket_arn" {
-	type = "string"
 }
 
 variable "cluster_size" {
@@ -39,18 +23,6 @@ variable "ami" {
 }
 
 variable "instance_type" {
-	type = "string"
-}
-
-variable "nomad_serf_key" {
-	type = "string"
-}
-
-variable "nomad_circonus_token" {
-	type = "string"
-}
-
-variable "tls_key_bucket_name" {
 	type = "string"
 }
 

@@ -26,24 +26,4 @@ data "aws_iam_policy_document" "nomad_server" {
 			"ec2:DescribeTags",
 		]
 	}
-	statement {
-		sid = "AllowNomadTLSKeysAccess"
-		effect = "Allow"
-		resources = [
-			"${var.tls_key_bucket_arn}/nomad/*",
-		]
-		actions = [
-			"s3:GetObject"
-		]
-	}
-	statement {
-		sid = "AllowTLSKeyDecrypt"
-		effect = "Allow"
-		resources = [
-			"${var.tls_kms_arn}"
-		]
-		actions = [
-			"kms:Decrypt"
-		]
-	}
 }

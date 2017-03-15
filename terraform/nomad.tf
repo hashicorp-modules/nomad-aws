@@ -47,16 +47,4 @@ resource "aws_autoscaling_group" "nomad_server" {
 		value = "${format("%s Nomad Server", var.cluster_name)}"
 		propagate_at_launch = true
 	}
-	
-	tag {
-		key = "tfe:nomad:serf_key"
-		value = "${var.nomad_serf_key}"
-		propagate_at_launch = true
-	}
-	
-	tag {
-		key = "tfe:nomad:circonus_token"
-		value = "${var.nomad_circonus_token}"
-		propagate_at_launch = true
-	}
 }

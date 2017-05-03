@@ -1,14 +1,10 @@
 # Required variables
-
-## how is this used?
-variable "consul_sg_id" {
-  type = "string"
-}
-
-##
-
 variable "cluster_name" {
   description = "Auto Scaling Group Cluster Name"
+}
+
+variable "consul_server_sg_id" {
+  description = "Consul Server Security Group ID"
 }
 
 variable "os" {
@@ -25,6 +21,7 @@ variable "ssh_key_name" {
 }
 
 variable "subnet_ids" {
+  type        = "list"
   description = "Pre-existing Subnet ID(s) to use"
 }
 

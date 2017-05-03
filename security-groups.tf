@@ -1,6 +1,6 @@
 resource "aws_security_group" "nomad_server" {
-  name        = "foundation-server-sg"
-  description = "Security group for Nomad Server Instances"
+  name        = "nomad-server-sg"
+  description = "Security Group for Nomad Server Instances"
   vpc_id      = "${var.vpc_id}"
 
   tags {

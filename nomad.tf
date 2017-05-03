@@ -17,8 +17,8 @@ resource "aws_iam_role_policy" "nomad_server" {
 }
 
 resource "aws_iam_instance_profile" "nomad_server" {
-  name  = "${var.cluster_name}-NomadServer"
-  roles = ["${aws_iam_role.nomad_server.name}"]
+  name = "${var.cluster_name}-NomadServer"
+  role = "${aws_iam_role.nomad_server.name}"
 }
 
 # data "template_file" "init" {
@@ -33,12 +33,13 @@ resource "aws_iam_instance_profile" "nomad_server" {
 resource "aws_launch_configuration" "nomad_server" {
   image_id      = "${module.images-aws.nomad_image}"
   instance_type = "${var.instance_type}"
-  user_data     = "${data.template_file.init.rendered}"
-  key_name      = "${var.ssh_key_name}"
+
+  #user_data     = "${data.template_file.init.rendered}"
+  key_name = "${var.ssh_key_name}"
 
   security_groups = [
     "${aws_security_group.nomad_server.id}",
-    "${var.consul_sg_id}",                   # this needs replacing with consul-aws output
+    "${var.consul_server_sg_id}",
   ]
 
   associate_public_ip_address = false

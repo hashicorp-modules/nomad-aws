@@ -21,21 +21,22 @@ resource "aws_iam_instance_profile" "nomad_server" {
   role = "${aws_iam_role.nomad_server.name}"
 }
 
-# data "template_file" "init" {
-#   template = "${file("${path.module}/init-cluster.tpl")}"
-#
-#   vars = {
-#     region       = "${var.region}"
-#     cluster_name = "${var.cluster_name}"
-#   }
-# }
+data "template_file" "init" {
+  template = "${file("${path.module}/init-cluster.tpl")}"
+
+  vars = {
+    consul_as_server = "${var.consul_as_server}"
+    nomad_as_client  = "${var.nomad_as_client}"
+    nomad_as_server  = "${var.nomad_as_server}"
+    nomad_use_consul = "${var.nomad_use_consul}"
+  }
+}
 
 resource "aws_launch_configuration" "nomad_server" {
   image_id      = "${module.images-aws.nomad_image}"
   instance_type = "${var.instance_type}"
-
-  #user_data     = "${data.template_file.init.rendered}"
-  key_name = "${var.ssh_key_name}"
+  user_data     = "${data.template_file.init.rendered}"
+  key_name      = "${var.ssh_key_name}"
 
   security_groups = [
     "${aws_security_group.nomad_server.id}",

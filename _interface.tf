@@ -32,12 +32,32 @@ variable "vpc_id" {
 # Optional variables
 variable "cluster_size" {
   default     = "3"
-  description = "Number of instances to launch in the cluster"
+  description = "Number of instances to launch in the cluster eg 3"
+}
+
+variable "consul_as_server" {
+  default     = "true"
+  description = "Run the consul agent in server mode: true/false"
 }
 
 variable "instance_type" {
   default     = "m4.large"
   description = "AWS instance type to use eg m4.large"
+}
+
+variable "nomad_as_client" {
+  default     = "true"
+  description = "Run the nomad agent in client mode: true/false"
+}
+
+variable "nomad_as_server" {
+  default     = "true"
+  description = "Run the nomad agent in server mode: true/false"
+}
+
+variable "nomad_use_consul" {
+  default     = "true"
+  description = "Use nomad with consul: true/false"
 }
 
 variable "nomad_version" {
@@ -53,4 +73,8 @@ variable "region" {
 # Outputs
 output "asg_id" {
   value = "${aws_autoscaling_group.nomad_server.id}"
+}
+
+output "nomad_server_sg_id" {
+  value = "${aws_security_group.nomad_server.id}"
 }

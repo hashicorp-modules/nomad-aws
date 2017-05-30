@@ -7,6 +7,10 @@ variable "consul_server_sg_id" {
   description = "Consul Server Security Group ID"
 }
 
+variable "environment_name" {
+  description = "Environment Name (tagged to all instances)"
+}
+
 variable "os" {
   # case sensitive for AMI lookup
   description = "Operating System to use ie RHEL or Ubuntu"

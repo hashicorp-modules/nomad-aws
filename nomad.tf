@@ -3,7 +3,7 @@ terraform {
 }
 
 module "images-aws" {
-  source        = "git@github.com:hashicorp-modules/images-aws.git"
+  source        = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-05-26"
   nomad_version = "${var.nomad_version}"
   os            = "${var.os}"
   os_version    = "${var.os_version}"
@@ -29,7 +29,9 @@ data "template_file" "init" {
   template = "${file("${path.module}/init-cluster.tpl")}"
 
   vars = {
+    cluster_size     = "${var.cluster_size}"
     consul_as_server = "${var.consul_as_server}"
+    environment_name = "${var.environment_name}"
     nomad_as_client  = "${var.nomad_as_client}"
     nomad_as_server  = "${var.nomad_as_server}"
     nomad_use_consul = "${var.nomad_use_consul}"
@@ -75,6 +77,12 @@ resource "aws_autoscaling_group" "nomad_server" {
   tag {
     key                 = "Cluster-Name"
     value               = "${var.cluster_name}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Environment-Name"
+    value               = "${var.environment_name}"
     propagate_at_launch = true
   }
 }

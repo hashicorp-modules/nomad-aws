@@ -62,11 +62,6 @@ if [[ ! "${nomad_use_consul}" = "true" ]]; then
   rm /etc/nomad.d/nomad-consul.hcl
 fi
 
-echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
-
-sudo yum-config-manager  -y   --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y docker-ce
-
 # start consul and nomad once they are configured correctly
 systemctl start consul
 systemctl start nomad

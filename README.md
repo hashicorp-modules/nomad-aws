@@ -38,7 +38,7 @@ You can pass Terraform variables during `terraform apply` or in a
 
 ## Images
 
-- [nomad-server.json Packer template](https://github.com/hashicorp-modules/packer-templates/blob/master/nomad/nomad-server.json)
+- [nomad.json Packer template](https://github.com/hashicorp-modules/packer-templates/blob/master/nomad/nomad.json)
 
 ## Usage
 

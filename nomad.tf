@@ -3,14 +3,14 @@ terraform {
 }
 
 module "images-aws" {
-  source        = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-05-26"
+  source        = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-07-03"
   nomad_version = "${var.nomad_version}"
   os            = "${var.os}"
   os_version    = "${var.os_version}"
 }
 
 resource "aws_iam_role" "nomad_server" {
-  name               = "${var.cluster_name}-NomadServer"
+  name               = "${var.cluster_name}-Nomad-Server"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
@@ -21,7 +21,7 @@ resource "aws_iam_role_policy" "nomad_server" {
 }
 
 resource "aws_iam_instance_profile" "nomad_server" {
-  name = "${var.cluster_name}-NomadServer"
+  name = "${var.cluster_name}-Nomad-Server"
   role = "${aws_iam_role.nomad_server.name}"
 }
 

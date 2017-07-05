@@ -4,50 +4,81 @@ instance_id="$(curl -s http://169.254.169.254/latest/meta-data/instance-id)"
 local_ipv4="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"
 new_hostname="nomad-$${instance_id}"
 
+# stop consul and nomad so they can be configured correctly
+systemctl stop nomad
+systemctl stop consul
+
+# clear the consul and nomad data directory ready for a fresh start
+rm -rf /opt/consul/data/*
+rm -rf /opt/nomad/data/*
+
 # set the hostname (before starting consul and nomad)
 hostnamectl set-hostname "$${new_hostname}"
 
+# seeing failed nodes listed  in consul members with their solo config
+# try a 2 min sleep to see if it helps with all instances wiping data
+# in a similar time window
+sleep 120
+
 # add the consul group to the config with jq
-jq ".retry_join_ec2 += {\"tag_key\": \"Environment-Name\", \"tag_value\": \"${environment_name}\"}" < /etc/consul.d/consul-default.json.example > /etc/consul.d/consul-default.json
+jq ".retry_join_ec2 += {\"tag_key\": \"Environment-Name\", \"tag_value\": \"${environment_name}\"}" < /etc/consul.d/consul-default.json > /tmp/consul-default.json.tmp
+sed -i -e "s/127.0.0.1/$${local_ipv4}/" /tmp/consul-default.json.tmp
+mv /tmp/consul-default.json.tmp /etc/consul.d/consul-default.json
 chown consul:consul /etc/consul.d/consul-default.json
 
 # configure nomad to listen on private ip address for rpc and serf
-cp /etc/nomad.d/nomad-default.hcl.example /etc/nomad.d/nomad-default.hcl
 echo "advertise {
-  http = \"127.0.0.1\"
+  http = \"$${local_ipv4}\"
   rpc = \"$${local_ipv4}\"
   serf = \"$${local_ipv4}\"
 }" | tee -a /etc/nomad.d/nomad-default.hcl
-chown nomad:nomad /etc/nomad.d/nomad-default.hcl
 
 if [[ "${consul_as_server}" = "true" ]]; then
   # add the cluster instance count to the config with jq
-  jq ".bootstrap_expect = ${cluster_size}" < /etc/consul.d/consul-server.json.example > /etc/consul.d/consul-server.json
+  jq ".bootstrap_expect = ${cluster_size}" < /etc/consul.d/consul-server.json > /tmp/consul-server.json.tmp
+  mv /tmp/consul-server.json.tmp /etc/consul.d/consul-server.json
   chown consul:consul /etc/consul.d/consul-server.json
+else
+  # remove the consul as server config
+  rm /etc/consul.d/consul-server.json
 fi
 
-if [[ "${nomad_as_client}" = "true" ]]; then
-  # add the nomad client config
-  cp /etc/nomad.d/nomad-client.hcl.example /etc/nomad.d/nomad-client.hcl
-  chown nomad:nomad /etc/nomad.d/nomad-client.hcl
+if [[ ! "${nomad_as_client}" = "true" ]]; then
+  # remove the nomad client config
+  rm /etc/nomad.d/nomad-client.hcl
 fi
 
 if [[ "${nomad_as_server}" = "true" ]]; then
   # add the cluster instance count to the nomad server config
-  sed -e "s/bootstrap_expect = 1/bootstrap_expect = ${cluster_size}/g" /etc/nomad.d/nomad-server.hcl.example > /etc/nomad.d/nomad-server.hcl
-  chown nomad:nomad /etc/nomad.d/nomad-server.hcl
+  sed -e "s/bootstrap_expect = 1/bootstrap_expect = ${cluster_size}/g" /etc/nomad.d/nomad-server.hcl > /tmp/nomad-server.hcl.tmp
+  mv /tmp/nomad-server.hcl.tmp /etc/nomad.d/nomad-server.hcl
+else
+  # remove the nomad server config
+  rm /etc/nomad.d/nomad-server.hcl
 fi
 
-if [[ "${nomad_use_consul}" = "true" ]]; then
-  # add consul stanza to nomad config
-  cp /etc/nomad.d/nomad-consul.hcl.example /etc/nomad.d/nomad-consul.hcl
-  chown nomad:nomad /etc/nomad.d/nomad-consul.hcl
+if [[ ! "${nomad_use_consul}" = "true" ]]; then
+  # remove consul from nomad config
+  rm /etc/nomad.d/nomad-consul.hcl
 fi
 
-# consul agent exists on all instances in client or server configuration
-systemctl enable consul
+echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
+
+sudo yum-config-manager  -y   --add-repo     https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y docker-ce
+
+# start consul and nomad once they are configured correctly
 systemctl start consul
-
-# enable and start nomad once it is configured correctly
-systemctl enable nomad
 systemctl start nomad
+systemctl start docker
+
+DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet/ {print $2}'|sed 's/addr://'`)
+echo "nameserver $DOCKER_BRIDGE_IP_ADDRESS" | sudo tee /etc/resolv.conf.new
+cat /etc/resolv.conf | sudo tee --append /etc/resolv.conf.new
+sudo mv /etc/resolv.conf.new /etc/resolv.conf
+systemctl restart dnsmasq
+
+sudo sh -c 'echo "server=/consul/127.0.0.1#8600" > /etc/dnsmasq.d/consul'
+sudo systemctl restart dnsmasq
+
+

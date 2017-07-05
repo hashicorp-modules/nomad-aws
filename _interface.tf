@@ -33,6 +33,11 @@ variable "vpc_id" {
   description = "Pre-existing VPC ID to use"
 }
 
+variable "vpc_cidr_block" {
+  description = "Pre-existing VPC cidr block to use"
+  default = ""
+}
+
 # Optional variables
 variable "cluster_size" {
   default     = "3"
@@ -65,13 +70,18 @@ variable "nomad_use_consul" {
 }
 
 variable "nomad_version" {
-  default     = "0.5.6"
+  default     = "0.6.0"
   description = "Nomad Agent version to use ie 0.5.6"
 }
 
 variable "region" {
   default     = "us-west-1"
   description = "Region to deploy nomad cluster ie us-west-1"
+}
+
+variable "custom_user_init" {
+  default     = ""
+  description = "Custom script passed in to module"
 }
 
 # Outputs

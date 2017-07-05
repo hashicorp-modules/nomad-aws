@@ -3,14 +3,16 @@ terraform {
 }
 
 module "images-aws" {
-  source        = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-05-26"
+  //source        = "git@github.com:hashicorp-modules/images-aws.git?ref=2017-07-03"
+  source = "../../modules/images-aws"
   nomad_version = "${var.nomad_version}"
   os            = "${var.os}"
   os_version    = "${var.os_version}"
 }
 
+
 resource "aws_iam_role" "nomad_server" {
-  name               = "${var.cluster_name}-NomadServer"
+  name               = "${var.cluster_name}-Nomad-Server"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"
 }
 
@@ -21,8 +23,12 @@ resource "aws_iam_role_policy" "nomad_server" {
 }
 
 resource "aws_iam_instance_profile" "nomad_server" {
-  name = "${var.cluster_name}-NomadServer"
+  name = "${var.cluster_name}-Nomad-Server"
   role = "${aws_iam_role.nomad_server.name}"
+}
+
+output "iam_instance_profile_nomad_server" {
+  value = "${aws_iam_instance_profile.nomad_server.id}"
 }
 
 data "template_file" "init" {
@@ -57,6 +63,7 @@ resource "aws_launch_configuration" "nomad_server" {
     create_before_destroy = true
   }
 }
+
 
 resource "aws_autoscaling_group" "nomad_server" {
   launch_configuration = "${aws_launch_configuration.nomad_server.id}"

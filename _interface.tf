@@ -79,11 +79,6 @@ variable "region" {
   description = "Region to deploy nomad cluster ie us-west-1"
 }
 
-variable "custom_user_init" {
-  default     = ""
-  description = "Custom script passed in to module"
-}
-
 # Outputs
 output "asg_id" {
   value = "${aws_autoscaling_group.nomad_server.id}"
@@ -91,4 +86,8 @@ output "asg_id" {
 
 output "nomad_server_sg_id" {
   value = "${aws_security_group.nomad_server.id}"
+}
+
+output "iam_instance_profile_nomad_server" {
+  value = "${aws_iam_instance_profile.nomad_server.id}"
 }

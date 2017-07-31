@@ -26,10 +26,6 @@ resource "aws_iam_instance_profile" "nomad_server" {
   role = "${aws_iam_role.nomad_server.name}"
 }
 
-output "iam_instance_profile_nomad_server" {
-  value = "${aws_iam_instance_profile.nomad_server.id}"
-}
-
 data "template_file" "init" {
   template = "${file("${path.module}/init-cluster.tpl")}"
 
@@ -62,7 +58,6 @@ resource "aws_launch_configuration" "nomad_server" {
     create_before_destroy = true
   }
 }
-
 
 resource "aws_autoscaling_group" "nomad_server" {
   launch_configuration = "${aws_launch_configuration.nomad_server.id}"

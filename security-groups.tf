@@ -21,7 +21,7 @@ resource "aws_security_group" "nomad_server" {
     from_port   = 4646
     to_port     = 4646
     protocol    = "tcp"
-    self        = true
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Nomad RPC
@@ -34,10 +34,10 @@ resource "aws_security_group" "nomad_server" {
 
   # Nomad Serf
   ingress {
-    from_port = 4648
-    to_port   = 4648
-    protocol  = "tcp"
-    self      = true
+    from_port   = 4648
+    to_port     = 4648
+    protocol    = "tcp"
+    self        = true
   }
 
   # TCP All outbound traffic

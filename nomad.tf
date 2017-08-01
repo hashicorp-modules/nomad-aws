@@ -9,6 +9,7 @@ module "images-aws" {
   os_version    = "${var.os_version}"
 }
 
+
 resource "aws_iam_role" "nomad_server" {
   name               = "${var.cluster_name}-Nomad-Server"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role.json}"

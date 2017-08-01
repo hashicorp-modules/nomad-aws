@@ -28,7 +28,7 @@ chown consul:consul /etc/consul.d/consul-default.json
 
 # configure nomad to listen on private ip address for rpc and serf
 echo "advertise {
-  http = \"127.0.0.1\"
+  http = \"$${local_ipv4}\"
   rpc = \"$${local_ipv4}\"
   serf = \"$${local_ipv4}\"
 }" | tee -a /etc/nomad.d/nomad-default.hcl
@@ -65,3 +65,15 @@ fi
 # start consul and nomad once they are configured correctly
 systemctl start consul
 systemctl start nomad
+systemctl start docker
+
+DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet/ {print $2}'|sed 's/addr://'`)
+echo "nameserver $DOCKER_BRIDGE_IP_ADDRESS" | sudo tee /etc/resolv.conf.new
+cat /etc/resolv.conf | sudo tee --append /etc/resolv.conf.new
+sudo mv /etc/resolv.conf.new /etc/resolv.conf
+systemctl restart dnsmasq
+
+sudo sh -c 'echo "server=/consul/127.0.0.1#8600" > /etc/dnsmasq.d/consul'
+sudo systemctl restart dnsmasq
+
+

@@ -33,6 +33,11 @@ variable "vpc_id" {
   description = "Pre-existing VPC ID to use"
 }
 
+variable "vpc_cidr_block" {
+  description = "Pre-existing VPC cidr block to use"
+  default = ""
+}
+
 # Optional variables
 variable "cluster_size" {
   default     = "3"
@@ -65,7 +70,7 @@ variable "nomad_use_consul" {
 }
 
 variable "nomad_version" {
-  default     = "0.5.6"
+  default     = "0.6.0"
   description = "Nomad Agent version to use ie 0.5.6"
 }
 
@@ -81,4 +86,8 @@ output "asg_id" {
 
 output "nomad_server_sg_id" {
   value = "${aws_security_group.nomad_server.id}"
+}
+
+output "iam_instance_profile_nomad_server" {
+  value = "${aws_iam_instance_profile.nomad_server.id}"
 }

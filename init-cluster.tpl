@@ -71,9 +71,3 @@ DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet/ {print $2}'|
 echo "nameserver $DOCKER_BRIDGE_IP_ADDRESS" | sudo tee /etc/resolv.conf.new
 cat /etc/resolv.conf | sudo tee --append /etc/resolv.conf.new
 sudo mv /etc/resolv.conf.new /etc/resolv.conf
-systemctl restart dnsmasq
-
-sudo sh -c 'echo "server=/consul/127.0.0.1#8600" > /etc/dnsmasq.d/consul'
-sudo systemctl restart dnsmasq
-
-

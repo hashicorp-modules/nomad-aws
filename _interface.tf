@@ -11,6 +11,10 @@ variable "environment_name" {
   description = "Environment Name (tagged to all instances)"
 }
 
+variable "nomad_version" {
+  description = "Nomad version to use eg 0.6.0 or 0.6.0+ent"
+}
+
 variable "os" {
   # case sensitive for AMI lookup
   description = "Operating System to use ie RHEL or Ubuntu"
@@ -35,7 +39,7 @@ variable "vpc_id" {
 
 variable "vpc_cidr_block" {
   description = "Pre-existing VPC cidr block to use"
-  default = ""
+  default     = ""
 }
 
 # Optional variables
@@ -47,6 +51,11 @@ variable "cluster_size" {
 variable "consul_as_server" {
   default     = "true"
   description = "Run the consul agent in server mode: true/false"
+}
+
+variable "environment" {
+  default     = "production"
+  description = "Environment eg development, stage or production"
 }
 
 variable "instance_type" {
@@ -67,11 +76,6 @@ variable "nomad_as_server" {
 variable "nomad_use_consul" {
   default     = "true"
   description = "Use nomad with consul: true/false"
-}
-
-variable "nomad_version" {
-  default     = "0.6.0"
-  description = "Nomad Agent version to use ie 0.5.6"
 }
 
 variable "region" {

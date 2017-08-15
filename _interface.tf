@@ -78,11 +78,6 @@ variable "nomad_use_consul" {
   description = "Use nomad with consul: true/false"
 }
 
-variable "region" {
-  default     = "us-west-1"
-  description = "Region to deploy nomad cluster ie us-west-1"
-}
-
 # Outputs
 output "asg_id" {
   value = "${aws_autoscaling_group.nomad_server.id}"

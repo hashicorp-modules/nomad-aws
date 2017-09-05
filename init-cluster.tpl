@@ -67,6 +67,9 @@ systemctl start consul
 systemctl start nomad
 systemctl start docker
 
+echo 'JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")'|  sudo tee --apend /home/ubuntu/.bashrc
+echo "127.0.0.1 $(hostname)" | sudo tee --append /etc/hosts
+
 DOCKER_BRIDGE_IP_ADDRESS=(`ifconfig docker0 2>/dev/null|awk '/inet/ {print $2}'|sed 's/addr://'`)
 echo "nameserver $DOCKER_BRIDGE_IP_ADDRESS" | sudo tee /etc/resolv.conf.new
 cat /etc/resolv.conf | sudo tee --append /etc/resolv.conf.new

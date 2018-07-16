@@ -14,13 +14,13 @@ variable "release_version" {
 }
 
 variable "nomad_version" {
-  description = "Nomad version tag (e.g. 0.8.0 or 0.8.0-ent), defaults to \"0.8.0\"."
-  default     = "0.8.0"
+  description = "Nomad version tag (e.g. 0.8.4 or 0.8.4-ent), defaults to \"0.8.4\"."
+  default     = "0.8.4"
 }
 
 variable "consul_version" {
-  description = "Consul version tag (e.g. 1.0.6 or 1.0.6-ent), defaults to \"1.0.6\"."
-  default     = "1.0.6"
+  description = "Consul version tag (e.g. 1.2.0 or 1.2.0-ent), defaults to \"1.2.0\"."
+  default     = "1.2.0"
 }
 
 variable "os" {

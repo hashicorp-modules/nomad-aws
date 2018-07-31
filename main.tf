@@ -36,22 +36,24 @@ data "template_file" "nomad_init" {
 }
 
 module "nomad_server_sg" {
-  source = "github.com/hashicorp-modules/nomad-server-ports-aws"
+  # source = "github.com/hashicorp-modules/nomad-server-ports-aws"
+  source = "../nomad-server-ports-aws"
 
   create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-nomad-server"
   vpc_id      = "${var.vpc_id}"
-  cidr_blocks = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Nomad ports for public access - DO NOT DO THIS IN PROD
+  cidr_blocks = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
   tags        = "${var.tags}"
 }
 
 module "consul_client_sg" {
-  source = "github.com/hashicorp-modules/consul-client-ports-aws"
+  # source = "github.com/hashicorp-modules/consul-client-ports-aws"
+  source = "../consul-client-ports-aws"
 
   create      = "${var.create ? 1 : 0}"
   name        = "${var.name}-nomad-consul-client"
   vpc_id      = "${var.vpc_id}"
-  cidr_blocks = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open Consul ports for public access - DO NOT DO THIS IN PROD
+  cidr_blocks = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
   tags        = "${var.tags}"
 }
 
@@ -63,7 +65,7 @@ resource "aws_security_group_rule" "ssh" {
   protocol          = "tcp"
   from_port         = 22
   to_port           = 22
-  cidr_blocks       = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+  cidr_blocks       = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
 }
 
 resource "aws_launch_configuration" "nomad" {
@@ -89,12 +91,13 @@ resource "aws_launch_configuration" "nomad" {
 }
 
 module "nomad_lb_aws" {
-  source = "github.com/hashicorp-modules/nomad-lb-aws"
+  # source = "github.com/hashicorp-modules/nomad-lb-aws"
+  source = "../nomad-lb-aws"
 
   create             = "${var.create}"
   name               = "${var.name}"
   vpc_id             = "${var.vpc_id}"
-  cidr_blocks        = ["${var.public ? "0.0.0.0/0" : var.vpc_cidr}"] # If there's a public IP, open port 22 for public access - DO NOT DO THIS IN PROD
+  cidr_blocks        = ["${split(",", length(compact(var.cidr_blocks)) > 0 ? join(",", compact(var.cidr_blocks)) : var.vpc_cidr)}"]
   subnet_ids         = ["${var.subnet_ids}"]
   is_internal_lb     = "${!var.public}"
   use_lb_cert        = "${var.use_lb_cert}"
@@ -117,7 +120,6 @@ resource "aws_autoscaling_group" "nomad" {
   vpc_zone_identifier  = ["${var.subnet_ids}"]
   max_size             = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
   min_size             = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
-  min_elb_capacity     = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
   desired_capacity     = "${var.count != -1 ? var.count : length(var.subnet_ids)}"
   default_cooldown     = 30
   force_delete         = true

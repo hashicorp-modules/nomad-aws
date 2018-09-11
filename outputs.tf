@@ -8,7 +8,7 @@ You can interact with Nomad using any of the CLI
 (https://www.nomadproject.io/docs/commands/index.html) or API
 (https://www.nomadproject.io/api/index.html) commands.
 
-${format("Nomad UI: %s%s %s\n\n%s", var.use_lb_cert ? "https://" : "http://", module.nomad_lb_aws.nomad_lb_dns, var.public ? "(Public)" : "(Internal)", var.public ? "The Nomad nodes are in a public subnet with UI & SSH access open from the\ninternet. WARNING - DO NOT DO THIS IN PRODUCTION!" : "The Nomad node(s) are in a private subnet, UI access can only be achieved inside\nthe network through a VPN.")}
+${format("Nomad UI: %s%s %s\n\n%s", var.lb_use_cert ? "https://" : "http://", module.nomad_lb_aws.nomad_lb_dns, !var.lb_internal ? "(Public)" : "(Internal)", !var.lb_internal ? "The Nomad nodes are in a public subnet with UI & SSH access open from the\ninternet. WARNING - DO NOT DO THIS IN PRODUCTION!" : "The Nomad node(s) are in a private subnet, UI access can only be achieved inside\nthe network.")}
 
 Use the CLI to retrieve Nomad servers & clients, then deploy a Redis Docker
 container and check it's status.
@@ -28,7 +28,7 @@ Use the HTTP API to deploy a Redis Docker container.
 
   $ nomad run -output example.nomad > example.json # Convert job file to JSON
 
-${!var.use_lb_cert ?
+${!var.lb_use_cert ?
 "If you're making HTTP API requests to Nomad from the Bastion host,
 the below env var has been set for you.
 
@@ -101,8 +101,28 @@ output "nomad_sg_id" {
   value = "${module.nomad_server_sg.nomad_server_sg_id}"
 }
 
-output "nomad_lb_sg_id" {
-  value = "${module.nomad_lb_aws.nomad_lb_sg_id}"
+output "nomad_app_lb_sg_id" {
+  value = "${module.nomad_lb_aws.nomad_app_lb_sg_id}"
+}
+
+output "nomad_lb_arn" {
+  value = "${module.nomad_lb_aws.nomad_lb_arn}"
+}
+
+output "nomad_app_lb_dns" {
+  value = "${module.nomad_lb_aws.nomad_app_lb_dns}"
+}
+
+output "nomad_network_lb_dns" {
+  value = "${module.nomad_lb_aws.nomad_network_lb_dns}"
+}
+
+output "nomad_tg_tcp_22_arn" {
+  value = "${module.nomad_lb_aws.nomad_tg_tcp_22_arn}"
+}
+
+output "nomad_tg_tcp_4646_arn" {
+  value = "${module.nomad_lb_aws.nomad_tg_tcp_4646_arn}"
 }
 
 output "nomad_tg_http_4646_arn" {
@@ -113,8 +133,12 @@ output "nomad_tg_https_4646_arn" {
   value = "${module.nomad_lb_aws.nomad_tg_https_4646_arn}"
 }
 
-output "nomad_lb_dns" {
-  value = "${module.nomad_lb_aws.nomad_lb_dns}"
+output "nomad_tg_http_3030_arn" {
+  value = "${module.nomad_lb_aws.nomad_tg_http_3030_arn}"
+}
+
+output "nomad_tg_https_3030_arn" {
+  value = "${module.nomad_lb_aws.nomad_tg_https_3030_arn}"
 }
 
 output "nomad_asg_id" {

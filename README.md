@@ -28,15 +28,15 @@ Checkout [examples](./examples) for fully functioning examples.
 - `vpc_id`: [Required] VPC ID to provision resources in.
 - `vpc_cidr`: [Optional] VPC CIDR block to provision resources in.
 - `subnet_ids`: [Optional] Subnet ID(s) to provision resources in.
-- `cidr_blocks`: [Optional] List of CIDR blocks to set on resources, defaults to "vpc_cidr".
-- `public`: [Optional] Make hosts public, set optional "cidr_blocks" variable to open outside of the "vpc_cidr" - DO NOT DO THIS IN PROD, defaults to false.
 - `count`: [Optional] Number of Nomad nodes to provision across private subnets, defaults to private subnet count.
 - `instance_type`: [Optional] AWS instance type for Consul node (e.g. "m4.large"), defaults to "t2.small".
 - `image_id`: [Optional] AMI to use, defaults to the HashiStack AMI.
 - `instance_profile`: [Optional] AWS instance profile to use.
 - `user_data`: [Optional] user_data script to pass in at runtime.
 - `ssh_key_name`: [Required] Name of AWS keypair that will be created.
-- `use_lb_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
+- `lb_cidr_blocks`: [Optional] List of CIDR blocks to set on LB, defaults to "vpc_cidr".
+- `lb_internal`: [Optional] Creates an internal load balancer, defaults to true.
+- `lb_use_cert`: [Optional] Use certificate passed in for the LB IAM listener, "lb_cert" and "lb_private_key" must be passed in if true, defaults to false.
 - `lb_cert`: [Optional] Certificate for LB IAM server certificate.
 - `lb_private_key`: [Optional] Private key for LB IAM server certificate.
 - `lb_cert_chain`: [Optional] Certificate chain for LB IAM server certificate.
@@ -55,10 +55,16 @@ Checkout [examples](./examples) for fully functioning examples.
 - `zREADME`: README for module.
 - `consul_sg_id`: Consul security group ID.
 - `nomad_sg_id`: Nomad security group ID.
-- `nomad_lb_sg_id`: Nomad load balancer security group ID.
-- `nomad_tg_http_4646_arn`: Nomad load balancer HTTP 4646 target group.
-- `nomad_tg_https_4646_arn`: Nomad load balancer HTTPS 4646 target group.
-- `nomad_lb_dns`: Nomad load balancer DNS name.
+- `nomad_app_lb_sg_id`: Nomad application load balancer security group ID.
+- `nomad_lb_arn`: Nomad application load balancer ARN.
+- `nomad_app_lb_dns`: Nomad load balancer DNS name.
+- `nomad_network_lb_dns`: Nomad load balancer DNS name.
+- `nomad_tg_tcp_22_arn`: Nomad network load balancer TCP 22 target group.
+- `nomad_tg_tcp_4646_arn`: Nomad network load balancer TCP 4646 target group.
+- `nomad_tg_http_4646_arn`: Nomad application load balancer HTTP 4646 target group.
+- `nomad_tg_https_4646_arn`: Nomad application load balancer HTTPS 4646 target group.
+- `nomad_tg_http_3030_arn`: Nomad application load balancer HTTP 3030 target group.
+- `nomad_tg_https_3030_arn`: Nomad application load balancer HTTPS 3030 target group.
 - `nomad_asg_id`: Nomad autoscaling group ID.
 - `nomad_username`: The Nomad host username.
 

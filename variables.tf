@@ -8,19 +8,24 @@ variable "name" {
   default     = "nomad-aws"
 }
 
+variable "ami_owner" {
+  description = "Account ID of AMI owner."
+  default     = "012230895537"
+}
+
 variable "release_version" {
   description = "Release version tag (e.g. 0.1.0, 0.1.0-rc1, 0.1.0-beta1, 0.1.0-dev1), defaults to \"0.1.0\", view releases at https://github.com/hashicorp/guides-configuration#hashistack-version-tables"
   default     = "0.1.0"
 }
 
 variable "nomad_version" {
-  description = "Nomad version tag (e.g. 0.8.4 or 0.8.4-ent), defaults to \"0.8.4\"."
-  default     = "0.8.4"
+  description = "Nomad version tag (e.g. 0.8.6 or 0.8.6-ent), defaults to \"0.8.6\"."
+  default     = "0.8.6"
 }
 
 variable "consul_version" {
-  description = "Consul version tag (e.g. 1.2.0 or 1.2.0-ent), defaults to \"1.2.0\"."
-  default     = "1.2.0"
+  description = "Consul version tag (e.g. 1.2.3 or 1.2.3-ent), defaults to \"1.2.3\"."
+  default     = "1.2.3"
 }
 
 variable "os" {
